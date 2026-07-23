@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>লাইভ টিভি প্লেয়ার (HLS.js Demo)</title>
+  <title>লাইভ টিভি প্লেয়ার (HLS.js UI Update)</title>
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- HLS.js Library -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
@@ -13,33 +16,36 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
     }
 
     body {
-      background-color: #121212;
-      color: #ffffff;
+      background: #0d0f12;
+      color: #f3f4f6;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      padding: 20px;
+      padding: 20px 10px;
     }
 
     .player-container {
       width: 100%;
-      max-width: 900px;
-      background: #1e1e1e;
-      border-radius: 12px;
+      max-width: 960px;
+      background: #161a23;
+      border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
     }
 
+    /* Video Wrapper */
     .video-wrapper {
       position: relative;
       width: 100%;
       padding-top: 56.25%; /* 16:9 Aspect Ratio */
       background-color: #000;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     video {
@@ -51,43 +57,157 @@
       outline: none;
     }
 
+    /* Controls & Playlist Section */
     .controls-panel {
-      padding: 20px;
+      padding: 24px;
+    }
+
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .channel-title {
-      font-size: 1.2rem;
-      margin-bottom: 15px;
-      color: #00e676;
-    }
-
-    .playlist {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #ffffff;
       display: flex;
+      align-items: center;
       gap: 10px;
-      flex-wrap: wrap;
     }
 
+    .live-badge {
+      background: #ef4444;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+
+    /* Playlist Grid Layout */
+    .playlist {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 12px;
+      max-height: 250px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    /* Custom Scrollbar */
+    .playlist::-webkit-scrollbar {
+      width: 6px;
+    }
+    .playlist::-webkit-scrollbar-track {
+      background: #111318;
+      border-radius: 8px;
+    }
+    .playlist::-webkit-scrollbar-thumb {
+      background: #2d3748;
+      border-radius: 8px;
+    }
+    .playlist::-webkit-scrollbar-thumb:hover {
+      background: #4a5568;
+    }
+
+    /* Channel Cards/Buttons */
     .channel-btn {
-      background: #2a2a2a;
-      color: #fff;
-      border: 1px solid #444;
-      padding: 10px 16px;
-      border-radius: 6px;
+      background: #1f2430;
+      color: #d1d5db;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 12px 16px;
+      border-radius: 10px;
       cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 0.9rem;
+      transition: all 0.25s ease;
+      font-size: 0.92rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      text-align: left;
     }
 
+    .channel-btn .ch-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    .channel-btn .ch-number {
+      background: rgba(255, 255, 255, 0.08);
+      color: #9ca3af;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 6px;
+      min-width: 28px;
+      text-align: center;
+    }
+
+    .channel-btn .ch-name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .channel-btn .play-icon {
+      font-size: 0.8rem;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      color: #10b981;
+    }
+
+    /* Hover Effects */
     .channel-btn:hover {
-      background: #333;
-      border-color: #00e676;
+      background: #282f3f;
+      border-color: rgba(16, 185, 129, 0.3);
+      color: #ffffff;
+      transform: translateY(-2px);
     }
 
+    .channel-btn:hover .play-icon {
+      opacity: 0.6;
+    }
+
+    /* Active Channel State */
     .channel-btn.active {
-      background: #00e676;
-      color: #000;
-      font-weight: bold;
-      border-color: #00e676;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+      color: #10b981;
+      font-weight: 600;
+      border-color: #10b981;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+    }
+
+    .channel-btn.active .ch-number {
+      background: #10b981;
+      color: #000000;
+    }
+
+    .channel-btn.active .play-icon {
+      opacity: 1;
+    }
+
+    /* Mobile Responsive Adjustments */
+    @media (max-width: 600px) {
+      .controls-panel {
+        padding: 16px;
+      }
+      .playlist {
+        grid-template-columns: 1fr; /* Single column on mobile */
+      }
     }
   </style>
 </head>
@@ -101,7 +221,14 @@
 
     <!-- Channel Selector Controls -->
     <div class="controls-panel">
-      <h3 id="current-channel" class="channel-title">এখন চলছে: Select Channel</h3>
+      <div class="header-bar">
+        <div class="channel-title">
+          <i class="fa-solid fa-tv" style="color: #10b981;"></i>
+          <span id="current-channel">Select Channel</span>
+        </div>
+        <span class="live-badge"><i class="fa-solid fa-circle" style="font-size: 8px; vertical-align: middle;"></i> LIVE</span>
+      </div>
+
       <div class="playlist" id="playlist">
         <!-- Buttons will be dynamically generated by JS -->
       </div>
@@ -109,7 +236,7 @@
   </div>
 
   <script>
-    // ডেমো লাইভ টিভি চ্যানলগুলোর m3u8 স্ট্রিম ইউআরএল
+    // ডেমো লাইভ টিভি চ্যানেল লিস্ট
     const channels = [
       {
         name: "BTV HD",
@@ -134,13 +261,13 @@
     const channelTitle = document.getElementById('current-channel');
     let hls = null;
 
-    // স্ট্রিম প্লে করার মূল ফাংশন
+    // স্ট্রিম লোড করার ফাংশন
     function loadStream(url, name) {
-      channelTitle.textContent = `এখন চলছে: ${name}`;
+      channelTitle.textContent = name;
 
       if (Hls.isSupported()) {
         if (hls) {
-          hls.destroy(); // আগের স্ট্রিম বন্ধ করা
+          hls.destroy();
         }
         hls = new Hls();
         hls.loadSource(url);
@@ -149,7 +276,6 @@
           video.play();
         });
       }
-      // Safari এবং iOS ব্রাউজারের নিজস্ব HLS সাপোর্ট থাকে
       else if (video.canPlayType('application/vnd.apple.mpegurl')) {
         video.src = url;
         video.addEventListener('loadedmetadata', function () {
@@ -160,25 +286,30 @@
       }
     }
 
-    // চ্যানেল বাটনগুলো তৈরি করা
+    // সুন্দর ডিজাইনে বাটন রেন্ডার করা
     channels.forEach((channel, index) => {
       const btn = document.createElement('button');
       btn.className = 'channel-btn' + (index === 0 ? ' active' : '');
-      btn.textContent = channel.name;
+      
+      // বাটনের ভেতর আইকন ও নম্বর কাস্টমাইজেশন
+      btn.innerHTML = `
+        <div class="ch-info">
+          <span class="ch-number">${(index + 1).toString().padStart(2, '0')}</span>
+          <span class="ch-name">${channel.name}</span>
+        </div>
+        <i class="fa-solid fa-play play-icon"></i>
+      `;
 
       btn.addEventListener('click', () => {
-        // Active ক্লাস আপডেট করা
         document.querySelectorAll('.channel-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-
-        // স্ট্রিম লোড করা
         loadStream(channel.url, channel.name);
       });
 
       playlistContainer.appendChild(btn);
     });
 
-    // প্রথম চ্যানেলটি ডিফল্ট চালু হওয়া
+    // প্রথম চ্যানেল অটো-প্লে
     loadStream(channels[0].url, channels[0].name);
   </script>
 
